@@ -42,3 +42,8 @@ next-env.d.ts
 .xata
 .xatarc
 /src/xata*
+
+# ignore local database and local migrations
+prisma/local-db* 
+/src/**/migrations/* 
+/local-db* 

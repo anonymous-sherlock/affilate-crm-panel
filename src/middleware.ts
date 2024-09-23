@@ -1,9 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { DASHBOARD_REDIRECT } from "@routes";
+import { NextResponse } from "next/server";
 
-const isProtectedRoute = createRouteMatcher(["/dashboard(.*)", "/forum(.*)"]);
-const isPublicRoute = createRouteMatcher(["/auth/sign-in(.*)", "/auth/sign-up(.*)"]);
+const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
 
 export default clerkMiddleware((auth, req) => {
+  console.log(req.nextUrl.pathname);
+  if (req.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL(DASHBOARD_REDIRECT, req.url));
+  }
   if (!isPublicRoute(req)) auth().protect();
 });
 

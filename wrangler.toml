@@ -1,4 +1,11 @@
-name = "fastapi"
+name = "adscrush-api"
 compatibility_date = "2024-09-05"
-compatibility_flags = ["nodejs_compat"]
+
+# required for node-postgres to work
 node_compat = true
+
+
+[[d1_databases]]
+binding = "DB"
+database_name = "affiliate-crm-d1"
+database_id = "0021cea4-682c-418f-8613-c4e6f20407a7"

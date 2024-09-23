@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { useMediaQuery } from "@mantine/hooks";
+import React, { createContext, ReactNode, useContext, useEffect, useLayoutEffect, useState } from "react";
 
 interface SidebarContextProps {
   isOpen: boolean;
@@ -11,14 +12,16 @@ interface SidebarContextProps {
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
 export const SidebarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const isDestopDevice = useMediaQuery("(min-width: 769px)") ?? false;
+  const [isOpen, setIsOpen] = useState(isDestopDevice ?? true);
 
-  useEffect(() => {
-    // Change CSS variable based on the `isOpen` state
+  useEffect(() => {});
+
+  useLayoutEffect(() => {
     if (isOpen) {
-      document.documentElement.style.setProperty("--sidebar-width", "280px"); // Set the sidebar width when open
+      document.documentElement.style.setProperty("--sidebar-width", "280px");
     } else {
-      document.documentElement.style.setProperty("--sidebar-width", "0px"); // Set the sidebar width to 0px when closed
+      document.documentElement.style.setProperty("--sidebar-width", "0px");
     }
   }, [isOpen]);
 

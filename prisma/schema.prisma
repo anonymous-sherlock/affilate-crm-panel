@@ -1,21 +1,85 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "cockroachdb"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model user {
-  id        String  @id @default(uuid())
-  firstname String
-  lastname  String?
-  clerkId   String  @unique
+model User {
+  xata_id        String   @unique(map: "_pgroll_new_users_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int      @default(0)
+  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
+
+  firstName String @map("first_name")
+  lastName  String @map("last_name")
+  email     String @unique
+  clerkId   String @unique @map("clerk_id")
+
+  @@map("users")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ApiConfigurations {
+  xata_version   Int        @default(0)
+  xata_createdat DateTime   @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime   @default(now()) @db.Timestamptz(6)
+  xata_id        String     @unique(map: "_pgroll_new_api_configurations_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  apiKey         String?
+  authToken      String?
+  authType       AUTH_TYPE
+  method         API_METHOD
+  bodyType       BODY_TYPE
+  basicAuth      Json?
+  headers        Json?
+  url            String
+  queryParams    Json?
+  body           String?
+
+  @@map("api_configurations")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Lead {
+  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
+  xata_id        String   @unique(map: "_pgroll_new_leads_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int      @default(0)
+  address        String?
+  city           String?
+  country        String?
+  ip_address     String?
+  lp_name        String?
+  name           String
+  phone          String   @unique
+  state          String?
+  zip            String?
+
+  @@map("leads")
+}
+
+enum API_METHOD {
+  GET
+  POST
+  PUT
+  DELETE
+  PATCH
+}
+
+enum BODY_TYPE {
+  JSON
+  FORM_DATA
+  URL_ENCODED
+  TEXT
+}
+
+enum AUTH_TYPE {
+  BASIC
+  BEARER
+  API_KEY_HEADER
+  API_KEY_QUERY
 }
